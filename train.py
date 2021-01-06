@@ -5,7 +5,6 @@ import random
 import math
 
 import torch
-import torchvision
 from torch import multiprocessing
 from torchvision import datasets, transforms
 from torch.utils.data.distributed import DistributedSampler
@@ -80,11 +79,6 @@ def data_transforms():
             transforms.Normalize(mean=mean, std=std),
         ])
         test_transforms = val_transforms
-    elif FLAGS.data_transforms == 'cifar10':
-        train_transforms = transforms.Compose(
-            [transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
-        val_transforms = train_transforms
-        test_transforms = train_transforms
     else:
         try:
             transforms_lib = importlib.import_module(FLAGS.data_transforms)
@@ -127,19 +121,10 @@ def dataset(train_transforms, val_transforms, test_transforms):
                 train_set.samples = train_set.samples[val_size:]
         else:
             train_set = None
-            val_set = datasets.ImageFolder(
+        val_set = datasets.ImageFolder(
             os.path.join(FLAGS.dataset_dir, 'val'),
             transform=val_transforms)
-            test_set = None
-    elif FLAGS.dataset == 'cifar10':
-            train_set = torchvision.datasets.CIFAR10(root='./data', train=True,
-                                        download=True, transform=train_transforms)
-            test_set = torchvision.datasets.CIFAR10(root='./data', train=False,
-                                       download=True, transform=train_transforms)
-            val_set = torchvision.datasets.CIFAR10(root='./data', train=False,
-                                       download=True, transform=train_transforms)
-
-
+        test_set = None
     else:
         try:
             dataset_lib = importlib.import_module(FLAGS.dataset)
@@ -197,11 +182,6 @@ def data_loader(train_set, val_set, test_set):
             pin_memory=True,
             num_workers=FLAGS.data_loader_workers,
             drop_last=getattr(FLAGS, 'drop_last', False))
-        test_loader = val_loader
-    elif FLAGS.data_loader == 'cifar10':
-        train_loader = torch.utils.data.DataLoader(train_set, batch_size=4,
-                                         shuffle=True, num_workers=2)
-        val_loader = train_loader
         test_loader = val_loader
     else:
         try:

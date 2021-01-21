@@ -1,9 +1,9 @@
 # =========================== Basic Settings ===========================
 # machine info
-num_gpus_per_job: 1  # number of gpus each job need
+num_gpus_per_job: 2  # number of gpus each job need
 num_cpus_per_job: 63  # number of cpus each job need
-memory_per_job: 8 # memory requirement each job need
-gpu_type: "nvidia-jetson-nano"
+memory_per_job: 380 # memory requirement each job need
+gpu_type: "nvidia-tesla-v100"
 
 # data
 dataset: cifar10
@@ -56,8 +56,8 @@ data_transforms: cifar10
 lr: 0.045
 lr_scheduler: exp_decaying
 exp_decaying_lr_gamma: 0.98
-num_epochs: 3
-batch_size: 16
+num_epochs: 50
+batch_size: 256
 # test pretrained
 # test_only: True
 # pretrained: logs/s_mobilenet_v2_0.35_0.5_0.75_1.0.pt
